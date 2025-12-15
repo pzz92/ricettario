@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ricettario Intelligente</title>
+    <style>
+        :root {
+            --color-primary: #2a8f7e;
+            --color-primary-hover: #1d7069;
+            --color-primary-active: #156757;
+            --color-bg: #f8f7f4;
+            --color-surface: #ffffff;
+            --color-text: #1a1a1a;
+            --color-text-secondary: #666666;
+            --color-border: #e0ddd8;
+            --color-success: #2d9f6f;
+            --color-warning: #d97c3d;
+            --color-error: #c01530;
+            --color-gray-light: #f5f5f5;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            padding: var(--spacing-md);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: var(--spacing-sm);
+            color: var(--color-primary);
+        }
+
+        .subtitle {
+            color: var(--color-text-secondary);
+            font-size: 14px;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel {
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--color-border);
+            padding: var(--spacing-lg);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .panel-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .form-group {
+            margin-bottom: var(--spacing-md);
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: var(--spacing-xs);
+            color: var(--color-text);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-family: inherit;
+            background-color: var(--color-surface);
+            color: var(--color-text);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(42, 143, 126, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        button {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-xs);
+        }
+
+        .btn-primary {
+            background-color: var(--color-primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--color-primary-hover);
+        }
+
+        .btn-primary:active {
+            background-color: var(--color-primary-active);
+        }
+
+        .btn-secondary {
+            background-color: var(--color-gray-light);
+            color: var(--color-text);
+            border: 1px solid var(--color-border);
+        }
+
+        .btn-secondary:hover {
+            background-color: #f0f0f0;
+        }
+
+        .btn-danger {
+            background-color: var(--color-error);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #b01027;
+        }
+
+        .btn-sm {
+            padding: 4px 10px;
+            font-size: 12px;
+        }
+
+        .btn-block {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .recipe-list {
+            list-style: none;
+        }
+
+        .recipe-item {
+            padding: var(--spacing-md);
+            background: var(--color-gray-light);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--spacing-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .recipe-item:hover {
+            background: #efefef;
+        }
+
+        .recipe-item.active {
+            background: rgba(42, 143, 126, 0.1);
+            border: 1px solid var(--color-primary);
+        }
+
+        .recipe-item-name {
+            font-weight: 500;
+        }
+
+        .recipe-item-delete {
+            padding: 4px 8px;
+            font-size: 12px;
+        }
+
+        .recipe-content {
+            display: none;
+        }
+
+        .recipe-content.active {
+            display: block;
+        }
+
+        .recipe-header {
+            margin-bottom: var(--spacing-lg);
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .recipe-description {
+            color: var(--color-text-secondary);
+            font-size: 14px;
+            margin: var(--spacing-sm) 0;
+        }
+
+        .ingredients-section {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .ingredients-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .ingredient-input-group {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+            align-items: flex-end;
+        }
+
+        @media (max-width: 768px) {
+            .ingredient-input-group {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .ingredient-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr auto;
+            gap: var(--spacing-sm);
+            align-items: center;
+            padding: var(--spacing-md);
+            background: var(--color-gray-light);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        @media (max-width: 768px) {
+            .ingredient-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .ingredient-label {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ingredient-value {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .ingredient-percentage {
+            background: rgba(42, 143, 126, 0.1);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--color-primary);
+            text-align: center;
+        }
+
+        .ingredient-cost {
+            background: rgba(212, 175, 55, 0.1);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 600;
+            color: #a67e2d;
+            text-align: center;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--color-border);
+        }
+
+        .summary-item {
+            background: var(--color-gray-light);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-sm);
+            text-align: center;
+        }
+
+        .summary-label {
+            font-size: 12px;
+            color: var(--color-text-secondary);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .summary-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        .summary-value.cost {
+            color: #a67e2d;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-xl);
+            color: var(--color-text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-md);
+        }
+
+        @media (max-width: 768px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-lg);
+        }
+
+        .action-buttons button {
+            flex: 1;
+        }
+
+        .info-box {
+            background: rgba(42, 143, 126, 0.05);
+            border-left: 3px solid var(--color-primary);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            color: var(--color-text-secondary);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .tab-button {
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: transparent;
+            border: none;
+            border-bottom: 3px solid transparent;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .tab-button:hover {
+            color: var(--color-text);
+        }
+
+        .tab-button.active {
+            color: var(--color-primary);
+            border-bottom-color: var(--color-primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .recipe-detail-item {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+            gap: var(--spacing-sm);
+            align-items: center;
+            padding: var(--spacing-md);
+            background: var(--color-gray-light);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--spacing-sm);
+        }
+
+        @media (max-width: 768px) {
+            .recipe-detail-item {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📖 Ricettario Intelligente</h1>
+            <p class="subtitle">Ricette riproporzionabili con calcolo automatico di percentuali e costi</p>
+            
+            <!-- Backup Buttons -->
+            <div style="display: flex; gap: var(--spacing-sm); justify-content: center; margin-top: var(--spacing-lg); margin-bottom: var(--spacing-lg);">
+                <button class="btn-primary btn-sm" id="btnExportData">📤 Esporta Dati</button>
+                <button class="btn-primary btn-sm" id="btnImportData">📥 Importa Dati</button>
+                <input type="file" id="fileImportInput" accept=".json" style="display: none;">
+            </div>
+        </header>
+
+        <!-- Navigation Tabs -->
+        <div style="display: flex; gap: var(--spacing-sm); margin-bottom: var(--spacing-lg); border-bottom: 2px solid var(--color-border);">
+            <button class="tab-button active" data-tab="ingredients" onclick="switchTab('ingredients')">🥘 Ingredienti e Prezzi</button>
+            <button class="tab-button" data-tab="new-recipe" onclick="switchTab('new-recipe')">✏️ Nuova Ricetta</button>
+            <button class="tab-button" data-tab="my-recipes" onclick="switchTab('my-recipes')">📖 Le Mie Ricette</button>
+        </div>
+
+        <div class="main-grid">
+            <!-- TAB 1: Ingredients Management -->
+            <div id="tab-ingredients" class="tab-content active">
+                <div class="panel">
+                    <div class="panel-title">🥘 Ingredienti e Prezzi</div>
+                    <div class="info-box">
+                        Aggiungi gli ingredienti che utilizzerai nelle ricette con i relativi costi al chilo.
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nome Ingrediente</label>
+                        <input type="text" id="ingredientName" placeholder="Es: Farina di tipo 0">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Prezzo al kg (€)</label>
+                        <input type="number" id="ingredientPrice" placeholder="Es: 0,80" min="0" step="0.01">
+                    </div>
+
+                    <button class="btn-primary btn-block" id="btnAddIngredientGlobal" style="margin-bottom: var(--spacing-lg);">+ Aggiungi Ingrediente</button>
+
+                    <div class="ingredients-title" style="margin-top: var(--spacing-lg);">Elenco Ingredienti</div>
+                    <ul class="recipe-list" id="globalIngredientsList"></ul>
+                </div>
+            </div>
+
+            <!-- TAB 2: New Recipe -->
+            <div id="tab-new-recipe" class="tab-content hidden">
+                <div class="panel">
+                    <div class="panel-title">✏️ Nuova Ricetta</div>
+                    <div class="info-box">
+                        Crea una nuova ricetta selezionando gli ingredienti dalla tua libreria.
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nome della Ricetta</label>
+                        <input type="text" id="newRecipeName" placeholder="Es: Pane Toscano">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Descrizione</label>
+                        <textarea id="newRecipeDescription" placeholder="Note, preparazione, consigli..."></textarea>
+                    </div>
+
+                    <div class="ingredients-section">
+                        <div class="ingredients-title">🥘 Ingredienti</div>
+                        <div id="newRecipeIngredientsList"></div>
+                        <button class="btn-secondary" id="btnAddIngredientToRecipe">+ Aggiungi Ingrediente</button>
+                    </div>
+
+                    <div class="summary-grid">
+                        <div class="summary-item">
+                            <div class="summary-label">Peso Totale</div>
+                            <div class="summary-value" id="newRecipeTotalWeight">0g</div>
+                        </div>
+                        <div class="summary-item">
+                            <div class="summary-label">Costo Totale</div>
+                            <div class="summary-value cost" id="newRecipeTotalCost">€ 0,00</div>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn-primary" id="btnSaveNewRecipe">💾 Salva Ricetta</button>
+                        <button class="btn-secondary" id="btnResetNewRecipe">Azzera</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 3: My Recipes -->
+            <div id="tab-my-recipes" class="tab-content hidden">
+                <div class="panel">
+                    <div class="panel-title">📖 Le Mie Ricette</div>
+                    <div class="info-box">
+                        Tutte le tue ricette salvate. Clicca su una ricetta per visualizzarla e modificarla.
+                    </div>
+
+                    <div class="form-group">
+                        <input type="text" id="recipeSearchInput" placeholder="🔍 Cerca una ricetta...">
+                    </div>
+
+                    <div id="myRecipesList"></div>
+
+                    <div id="recipeDetail" class="hidden" style="margin-top: var(--spacing-lg); padding-top: var(--spacing-lg); border-top: 1px solid var(--color-border);">
+                        <div class="recipe-header">
+                            <h2 id="detailRecipeName" style="margin-bottom: var(--spacing-sm);"></h2>
+                            <p id="detailRecipeDescription" class="recipe-description"></p>
+                        </div>
+
+                        <div class="ingredients-section">
+                            <div class="ingredients-title">🥘 Ingredienti</div>
+                            <div id="detailIngredientsList"></div>
+                        </div>
+
+                        <div class="summary-grid">
+                            <div class="summary-item">
+                                <div class="summary-label">Peso Totale</div>
+                                <div class="summary-value" id="detailTotalWeight">0g</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-label">Costo Totale</div>
+                                <div class="summary-value cost" id="detailTotalCost">€ 0,00</div>
+                            </div>
+                        </div>
+
+                        <div class="action-buttons">
+                            <button class="btn-secondary" id="btnCloseRecipeDetail">Chiudi</button>
+                            <button class="btn-danger" id="btnDeleteRecipeDetail">🗑️ Elimina Ricetta</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let globalIngredients = JSON.parse(localStorage.getItem('globalIngredients')) || [];
+        let recipes = JSON.parse(localStorage.getItem('recipes')) || [];
+        let newRecipeIngredients = [];
+        let selectedRecipeId = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderGlobalIngredientsList();
+            renderMyRecipesList();
+            
+            // Tab 1: Ingredients
+            document.getElementById('btnAddIngredientGlobal').addEventListener('click', addGlobalIngredient);
+            
+            // Tab 2: New Recipe
+            document.getElementById('btnAddIngredientToRecipe').addEventListener('click', addIngredientToNewRecipe);
+            document.getElementById('btnSaveNewRecipe').addEventListener('click', saveNewRecipe);
+            document.getElementById('btnResetNewRecipe').addEventListener('click', resetNewRecipe);
+            
+            // Tab 3: My Recipes
+            document.getElementById('btnCloseRecipeDetail').addEventListener('click', closeRecipeDetail);
+            document.getElementById('btnDeleteRecipeDetail').addEventListener('click', deleteSelectedRecipe);
+            document.getElementById('recipeSearchInput').addEventListener('input', renderMyRecipesList);
+            
+            // Backup Buttons
+            document.getElementById('btnExportData').addEventListener('click', exportData);
+            document.getElementById('btnImportData').addEventListener('click', importData);
+        });
+
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+            
+            // Show selected tab
+            document.getElementById('tab-' + tabName).classList.add('active');
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+            if (tabName === 'my-recipes') {
+                renderMyRecipesList();
+            }
+        }
+
+        // ===== TAB 1: Global Ingredients Management =====
+        function addGlobalIngredient() {
+            const name = document.getElementById('ingredientName').value.trim();
+            const price = parseFloat(document.getElementById('ingredientPrice').value) || 0;
+            
+            if (!name) {
+                alert('Inserisci il nome dell\'ingrediente');
+                return;
+            }
+
+            const existingIndex = globalIngredients.findIndex(ing => ing.name.toLowerCase() === name.toLowerCase());
+            
+            if (existingIndex >= 0) {
+                globalIngredients[existingIndex].price = price;
+            } else {
+                globalIngredients.push({
+                    id: Date.now().toString(),
+                    name,
+                    price
+                });
+            }
+
+            saveGlobalIngredients();
+            document.getElementById('ingredientName').value = '';
+            document.getElementById('ingredientPrice').value = '';
+            renderGlobalIngredientsList();
+        }
+
+        function renderGlobalIngredientsList() {
+            const list = document.getElementById('globalIngredientsList');
+            list.innerHTML = '';
+
+            if (globalIngredients.length === 0) {
+                list.innerHTML = '<li style="padding: var(--spacing-md); color: var(--color-text-secondary); text-align: center;">Nessun ingrediente ancora</li>';
+                return;
+            }
+
+            globalIngredients.forEach(ingredient => {
+                const li = document.createElement('li');
+                li.className = 'recipe-item';
+                li.innerHTML = `
+                    <div style="flex: 1;">
+                        <div class="recipe-item-name">${ingredient.name}</div>
+                        <div style="font-size: 12px; color: var(--color-text-secondary); margin-top: 4px;">
+                            € ${ingredient.price.toFixed(2)} al kg
+                        </div>
+                    </div>
+                    <button class="btn-danger btn-sm recipe-item-delete" onclick="deleteGlobalIngredient('${ingredient.id}')">Elimina</button>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        function deleteGlobalIngredient(id) {
+            if (confirm('Eliminare questo ingrediente?')) {
+                globalIngredients = globalIngredients.filter(ing => ing.id !== id);
+                saveGlobalIngredients();
+                renderGlobalIngredientsList();
+            }
+        }
+
+        function saveGlobalIngredients() {
+            localStorage.setItem('globalIngredients', JSON.stringify(globalIngredients));
+        }
+
+        // ===== TAB 2: New Recipe =====
+        function addIngredientToNewRecipe() {
+            if (globalIngredients.length === 0) {
+                alert('Aggiungi prima degli ingredienti in "Ingredienti e Prezzi"');
+                return;
+            }
+
+            const quantity = 100;
+            newRecipeIngredients.push({
+                id: Date.now().toString(),
+                ingredientId: globalIngredients[0].id,
+                quantity
+            });
+
+            renderNewRecipeIngredients();
+        }
+
+        function renderNewRecipeIngredients() {
+            const list = document.getElementById('newRecipeIngredientsList');
+            list.innerHTML = '';
+
+            if (newRecipeIngredients.length === 0) {
+                list.innerHTML = '<p style="color: var(--color-text-secondary); font-size: 13px; margin-bottom: var(--spacing-md);">Aggiungi ingredienti per iniziare</p>';
+            } else {
+                const totalWeight = calculateNewRecipeTotalWeight();
+
+                newRecipeIngredients.forEach((ing, index) => {
+                    const ingredient = globalIngredients.find(g => g.id === ing.ingredientId);
+                    if (!ingredient) return;
+
+                    const percentage = totalWeight > 0 ? (ing.quantity / totalWeight * 100) : 0;
+                    const cost = ingredient.price * ing.quantity / 1000;
+
+                    list.innerHTML += `
+                        <div class="ingredient-row">
+                            <div>
+                                <div class="ingredient-label">Ingrediente</div>
+                                <select onchange="updateNewRecipeIngredient(${index}, 'ingredientId', this.value)">
+                                    ${globalIngredients.map(ing => `<option value="${ing.id}" ${ing.id === ingredient.id ? 'selected' : ''}>${ing.name}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div>
+                                <div class="ingredient-label">Quantità (g)</div>
+                                <input type="number" value="${ing.quantity}" onchange="updateNewRecipeIngredient(${index}, 'quantity', parseFloat(this.value) || 0)" placeholder="100" min="0" step="0.1">
+                            </div>
+                            <div>
+                                <div class="ingredient-label">%</div>
+                                <div class="ingredient-percentage">${percentage.toFixed(1)}%</div>
+                            </div>
+                            <div>
+                                <div class="ingredient-label">Costo</div>
+                                <div class="ingredient-cost">€ ${cost.toFixed(2)}</div>
+                            </div>
+                            <button class="btn-danger btn-sm" onclick="deleteNewRecipeIngredient(${index})">🗑️</button>
+                        </div>
+                    `;
+                });
+            }
+
+            updateNewRecipeSummary();
+        }
+
+        function calculateNewRecipeTotalWeight() {
+            return newRecipeIngredients.reduce((sum, ing) => sum + ing.quantity, 0);
+        }
+
+        function updateNewRecipeIngredient(index, field, value) {
+            newRecipeIngredients[index][field] = value;
+            renderNewRecipeIngredients();
+        }
+
+        function deleteNewRecipeIngredient(index) {
+            newRecipeIngredients.splice(index, 1);
+            renderNewRecipeIngredients();
+        }
+
+        function updateNewRecipeSummary() {
+            const totalWeight = calculateNewRecipeTotalWeight();
+            const totalCost = newRecipeIngredients.reduce((sum, ing) => {
+                const ingredient = globalIngredients.find(g => g.id === ing.ingredientId);
+                return sum + (ingredient ? (ingredient.price * ing.quantity / 1000) : 0);
+            }, 0);
+
+            document.getElementById('newRecipeTotalWeight').textContent = totalWeight.toFixed(0) + 'g';
+            document.getElementById('newRecipeTotalCost').textContent = '€ ' + totalCost.toFixed(2);
+        }
+
+        function saveNewRecipe() {
+            const name = document.getElementById('newRecipeName').value.trim();
+            const description = document.getElementById('newRecipeDescription').value.trim();
+
+            if (!name) {
+                alert('Inserisci il nome della ricetta');
+                return;
+            }
+
+            if (newRecipeIngredients.length === 0) {
+                alert('Aggiungi almeno un ingrediente');
+                return;
+            }
+
+            const recipe = {
+                id: Date.now().toString(),
+                name,
+                description,
+                ingredients: newRecipeIngredients.map(ing => ({
+                    ingredientId: ing.ingredientId,
+                    quantity: ing.quantity
+                }))
+            };
+
+            recipes.push(recipe);
+            saveRecipes();
+            resetNewRecipe();
+            alert('Ricetta salvata con successo!');
+        }
+
+        function resetNewRecipe() {
+            document.getElementById('newRecipeName').value = '';
+            document.getElementById('newRecipeDescription').value = '';
+            newRecipeIngredients = [];
+            renderNewRecipeIngredients();
+        }
+
+        // ===== TAB 3: My Recipes =====
+        function renderMyRecipesList() {
+            const list = document.getElementById('myRecipesList');
+            list.innerHTML = '';
+
+            if (recipes.length === 0) {
+                list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📖</div><p>Nessuna ricetta salvata ancora</p></div>';
+                return;
+            }
+
+            const searchTerm = document.getElementById('recipeSearchInput').value.toLowerCase();
+            const filteredRecipes = recipes.filter(recipe => 
+                recipe.name.toLowerCase().includes(searchTerm) || 
+                recipe.description.toLowerCase().includes(searchTerm)
+            );
+
+            const listHtml = document.createElement('ul');
+            listHtml.className = 'recipe-list';
+
+            if (filteredRecipes.length === 0) {
+                list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔍</div><p>Nessuna ricetta trovata</p></div>';
+                return;
+            }
+
+            filteredRecipes.forEach(recipe => {
+                const li = document.createElement('li');
+                li.className = 'recipe-item' + (recipe.id === selectedRecipeId ? ' active' : '');
+                li.innerHTML = `
+                    <div style="flex: 1; cursor: pointer;" onclick="viewRecipeDetail('${recipe.id}')">
+                        <div class="recipe-item-name">${recipe.name}</div>
+                        <div style="font-size: 12px; color: var(--color-text-secondary); margin-top: 4px;">
+                            ${recipe.ingredients.length} ingredienti
+                        </div>
+                    </div>
+                `;
+                listHtml.appendChild(li);
+            });
+
+            list.appendChild(listHtml);
+        }
+
+        function viewRecipeDetail(recipeId) {
+            selectedRecipeId = recipeId;
+            const recipe = recipes.find(r => r.id === recipeId);
+
+            document.getElementById('detailRecipeName').textContent = recipe.name;
+            document.getElementById('detailRecipeDescription').textContent = recipe.description || 'Nessuna descrizione';
+
+            const detailList = document.getElementById('detailIngredientsList');
+            detailList.innerHTML = '';
+
+            const totalWeight = recipe.ingredients.reduce((sum, ing) => sum + ing.quantity, 0);
+
+            recipe.ingredients.forEach((ing, index) => {
+                const ingredient = globalIngredients.find(g => g.id === ing.ingredientId);
+                if (!ingredient) return;
+
+                const percentage = totalWeight > 0 ? (ing.quantity / totalWeight * 100) : 0;
+                const cost = ingredient.price * ing.quantity / 1000;
+
+                const div = document.createElement('div');
+                div.className = 'recipe-detail-item';
+                div.innerHTML = `
+                    <div class="ingredient-value">${ingredient.name}</div>
+                    <div style="cursor: pointer; position: relative;" title="Clicca per riproporzionare">
+                        <div class="ingredient-label">Quantità</div>
+                        <div class="ingredient-value" style="background: rgba(42, 143, 126, 0.1); padding: 6px; border-radius: 6px; cursor: pointer;" onclick="scaleRecipeIngredient(${index})">${ing.quantity.toFixed(1)}g ⚖️</div>
+                    </div>
+                    <div>
+                        <div class="ingredient-label">%</div>
+                        <div class="ingredient-percentage">${percentage.toFixed(1)}%</div>
+                    </div>
+                    <div>
+                        <div class="ingredient-label">Prezzo/kg</div>
+                        <div class="ingredient-value">€ ${ingredient.price.toFixed(2)}</div>
+                    </div>
+                    <div>
+                        <div class="ingredient-label">Costo</div>
+                        <div class="ingredient-cost">€ ${cost.toFixed(2)}</div>
+                    </div>
+                `;
+                detailList.appendChild(div);
+            });
+
+            const totalCost = recipe.ingredients.reduce((sum, ing) => {
+                const ingredient = globalIngredients.find(g => g.id === ing.ingredientId);
+                return sum + (ingredient ? ingredient.price * ing.quantity / 1000 : 0);
+            }, 0);
+
+            document.getElementById('detailTotalWeight').textContent = totalWeight.toFixed(0) + 'g';
+            document.getElementById('detailTotalCost').textContent = '€ ' + totalCost.toFixed(2);
+
+            document.getElementById('recipeDetail').classList.remove('hidden');
+            renderMyRecipesList();
+        }
+
+        function scaleRecipeIngredient(index) {
+            const recipe = recipes.find(r => r.id === selectedRecipeId);
+            if (!recipe) return;
+
+            const ingredient = globalIngredients.find(g => g.id === recipe.ingredients[index].ingredientId);
+            const currentQuantity = recipe.ingredients[index].quantity;
+            
+            const newQuantity = prompt(`Nuova quantità per ${ingredient.name} (attuale: ${currentQuantity.toFixed(1)}g):`, currentQuantity.toFixed(1));
+            
+            if (newQuantity === null || newQuantity === '') return;
+            
+            const parsedQuantity = parseFloat(newQuantity);
+            if (isNaN(parsedQuantity) || parsedQuantity <= 0) {
+                alert('Inserisci un valore valido e positivo');
+                return;
+            }
+            
+            // Calculate the scaling factor
+            const scaleFactor = parsedQuantity / currentQuantity;
+            
+            // Apply scaling to all ingredients
+            recipe.ingredients.forEach(ing => {
+                ing.quantity = ing.quantity * scaleFactor;
+            });
+            
+            // Save and re-render
+            saveRecipes();
+            viewRecipeDetail(recipe.id);
+        }
+
+        function closeRecipeDetail() {
+            selectedRecipeId = null;
+            document.getElementById('recipeDetail').classList.add('hidden');
+            renderMyRecipesList();
+        }
+
+        function deleteSelectedRecipe() {
+            if (confirm('Eliminare questa ricetta?')) {
+                recipes = recipes.filter(r => r.id !== selectedRecipeId);
+                saveRecipes();
+                closeRecipeDetail();
+            }
+        }
+
+        function saveRecipes() {
+            localStorage.setItem('recipes', JSON.stringify(recipes));
+        }
+
+        // ===== BACKUP & RESTORE =====
+        function exportData() {
+            const data = {
+                globalIngredients,
+                recipes,
+                exportDate: new Date().toLocaleString('it-IT')
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `ricettario_backup_${new Date().getTime()}.json`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            alert('Dati esportati con successo!');
+        }
+
+        function importData() {
+            document.getElementById('fileImportInput').click();
+        }
+
+        document.getElementById('fileImportInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const data = JSON.parse(event.target.result);
+                    globalIngredients = data.globalIngredients || [];
+                    recipes = data.recipes || [];
+                    
+                    saveGlobalIngredients();
+                    saveRecipes();
+                    
+                    renderGlobalIngredientsList();
+                    renderMyRecipesList();
+                    
+                    alert('Dati importati con successo!');
+                } catch (error) {
+                    alert('Errore durante l\'importazione: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        });
+    </script>
+</body>
+</html>
